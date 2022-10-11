@@ -1,8 +1,6 @@
 import { useEffect ,useState } from 'react';
 import './style/App.scss';
 
-const url = 'https://movie-database-alternative.p.rapidapi.com/?s=justice&r=json&type=movie&page=1';
-
 const options = {
 	method: 'GET',
 	headers: {
@@ -11,26 +9,60 @@ const options = {
 	}
 };
 
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
 
 function App() {
   const [movies, setMovies] = useState();
+  const [search, setSearch] = useState('');
+  
+  let listRandomMovies = ['Justice',
+                      'Avengers', 
+                      'furious',
+                      'Harry%20Potter',
+                      'Scream',
+                      'High%20School%20Musical',
+                      'Amazing',
+                      'World',
+                      'Happy',
+                      'Black',
+                      'war'];
 
+  let searchMovie = listRandomMovies[getRandomNumber(0,11)] 
+  
   console.log("renderizou")
+  // console.log(search)
+  // //console.log(url)
+  // console.log(movies && movies)
+  // console.log(movies && movies.Response)
+ 
+  useEffect(() => {    
 
-  useEffect(() => {
+  let url = 'https://movie-database-alternative.p.rapidapi.com/?s='+searchMovie+'&r=json&page=1'
+
+  if(search.length > 1){
+    url = 'https://movie-database-alternative.p.rapidapi.com/?s='+search+'&r=json&page=1';
+  }
     fetch(url, options)
       .then(response => response.json())
       .then(data => setMovies(data))
       .catch(err => console.error(err));
-  }, [])
-
-  const results = movies && movies.Search
-  console.log(results && results)
+  }, [search])
 
   return (
     <div className="App">
       <h3>🎥Movie0📺</h3>
-      {results && results.map(item => {
+
+      <input 
+        name="search" 
+        type="text" 
+        placeholder="Buscar filme (em inglês please)" 
+        onChange={e => setSearch(e.target.value)}
+        value={search}
+      />
+      
+      {movies && movies.Response == 'True' && movies.Search.map(item => {
         return (
           <ul key={item.imdbID}>
             <li key={item.Title}>{item.Title} - {item.Year}</li>
